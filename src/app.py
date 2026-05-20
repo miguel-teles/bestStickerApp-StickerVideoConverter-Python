@@ -25,9 +25,7 @@ def lambda_handler(event, context):
         )
 
         input_file = "/tmp/" + key
-
-        random_string = str(uuid.uuid4())
-        output_key = "out" + random_string + ".webp"
+        output_key = "out" + key.split('.')[0] + ".webp"
         output_file = "/tmp/" + output_key
 
         s3.download_file(bucket, key, input_file)
