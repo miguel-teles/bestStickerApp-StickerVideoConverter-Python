@@ -21,6 +21,17 @@ Resources:
       Architectures:
         - x86_64
       AutoPublishAlias: dev
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - 's3:GetObject'
+              Resource: 'arn:aws:s3:::beststickerapp-videoconvertion-in'
+            - Effect: Allow
+              Action:
+                - 's3:PutObject'
+              Resource: 'arn:aws:s3:::beststickerapp-videoconvertion-out'
       Environment:
         Variables:
           OUTPUT_BUCKET_NAME: beststickerapp-videoconvertion-out
