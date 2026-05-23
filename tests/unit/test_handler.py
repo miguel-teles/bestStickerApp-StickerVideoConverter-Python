@@ -1,9 +1,11 @@
 import json
 
 import pytest
+import os
+
+os.environ["OUTPUT_BUCKET_NAME"] = 'test-bucket-out'
 
 from src import app
-
 
 @pytest.fixture()
 def apigw_event():
@@ -19,10 +21,10 @@ def apigw_event():
                 "eventName": "ObjectCreated:Put",
                 "s3": {
                     "bucket": {
-                        "name": "test-bucket"
+                        "name": "test-bucket-in"
                     },
                     "object": {
-                        "key": "test-video.mp4",
+                        "key": "video2.mp4",
                         "size": 34567
                     }
                 }
@@ -38,3 +40,7 @@ def test_lambda_handler(apigw_event):
     assert ret["statusCode"] == 200
     assert "file" in ret["body"]
     assert "bucket" in ret["body"]
+
+    body = json.loads(ret["body"])
+    assert body.get("file") == "outvideo2.webp"
+    assert body.get("bucket") == "test-bucket-out"

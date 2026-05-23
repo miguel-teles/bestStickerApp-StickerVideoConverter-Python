@@ -1,9 +1,10 @@
 import json
-import uuid
+import os
 
 import boto3
 import subprocess
 
+OUTPUT_BUCKET_NAME = os.environ["OUTPUT_BUCKET_NAME"]
 
 def lambda_handler(event, context):
     try:
@@ -12,17 +13,17 @@ def lambda_handler(event, context):
 
         # Adiciona isso se for rodar localmente
         #
-        # s3 = boto3.client(
-        #     "s3",
-        #     endpoint_url="http://localhost:4566",
-        #     aws_access_key_id="test",
-        #     aws_secret_access_key="test",
-        #     region_name="us-east-1"
-        # )
-
         s3 = boto3.client(
-            "s3"
+            "s3",
+            endpoint_url="http://localhost:4566",
+            aws_access_key_id="test",
+            aws_secret_access_key="test",
+            region_name="us-east-1"
         )
+
+        # s3 = boto3.client(
+        #     "s3"
+        # )
 
         input_file = "/tmp/" + key
         output_key = "out" + key.split('.')[0] + ".webp"
@@ -33,13 +34,13 @@ def lambda_handler(event, context):
         command = create_command(input_file, output_file)
         subprocess.run(command, check=True)
 
-        s3.upload_file(output_file, bucket, output_key)
+        s3.upload_file(output_file, OUTPUT_BUCKET_NAME, output_key)
 
         return {
             "statusCode": 200,
             "body": json.dumps({
                 "file": output_key,
-                "bucket": bucket,
+                "bucket": OUTPUT_BUCKET_NAME,
             }),
         }
     except Exception as e:
