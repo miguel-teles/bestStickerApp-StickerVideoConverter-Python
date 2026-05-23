@@ -27,10 +27,12 @@ Resources:
             - Effect: Allow
               Action:
                 - 's3:GetObject'
-              Resource: 'arn:aws:s3:::beststickerapp-videoconvertion-in'
+                - 's3:HeadObject'
+              Resource: 'arn:aws:s3:::*'
             - Effect: Allow
               Action:
                 - 's3:PutObject'
+                - 's3:HeadObject'
               Resource: 'arn:aws:s3:::beststickerapp-videoconvertion-out'
       Environment:
         Variables:

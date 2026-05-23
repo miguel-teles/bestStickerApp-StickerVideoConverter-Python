@@ -3,13 +3,18 @@ import os
 
 import boto3
 import subprocess
+import logging
 
 OUTPUT_BUCKET_NAME = os.environ["OUTPUT_BUCKET_NAME"]
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     try:
         key = event.get("Records")[0].get("s3").get("object").get("key")
         bucket = event.get("Records")[0].get("s3").get("bucket").get("name")
+        logger.info("Received S3 object key {} from bucket {}".format(key, bucket))
 
         # Adiciona isso se for rodar localmente
         #
