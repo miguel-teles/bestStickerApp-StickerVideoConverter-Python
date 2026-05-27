@@ -8,19 +8,31 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 10
+    MemorySize: 1024
+    Timeout: 60
 
 Resources:
+  FfmpegLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: ffmpeg-layer
+      Description: FFmpeg binary
+      ContentUri: ffmpeg-layer/
+      CompatibleRuntimes:
+        - python3.12
+
   StickerVideoConverter:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       FunctionName: StickerVideoConverter
       CodeUri: src/
       Handler: app.lambda_handler
-      Runtime: python3.13
+      Runtime: python3.12
       Architectures:
         - x86_64
       AutoPublishAlias: dev
+      Layers:
+        - !Ref FfmpegLayer
       Policies:
         - Version: '2012-10-17'
           Statement:
@@ -33,7 +45,7 @@ Resources:
               Action:
                 - 's3:PutObject'
                 - 's3:HeadObject'
-              Resource: 'arn:aws:s3:::beststickerapp-videoconvertion-out'
+              Resource: 'arn:aws:s3:::beststickerapp-videoconvertion-out/*'
       Environment:
         Variables:
           OUTPUT_BUCKET_NAME: beststickerapp-videoconvertion-out
