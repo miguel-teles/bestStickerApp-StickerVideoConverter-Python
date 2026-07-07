@@ -7,7 +7,8 @@ import subprocess
 import logging
 
 OUTPUT_BUCKET_NAME = os.environ["OUTPUT_BUCKET_NAME"]
-FFMPEG_PATH = "/opt/bin/ffmpeg"
+# FFMPEG_PATH = "/opt/bin/ffmpeg"
+FFMPEG_PATH = "ffmpeg"
 
 CONFIGS = {
     50: (12, 80),
@@ -18,6 +19,7 @@ CONFIGS = {
     1000: (10, 40),
     2000: (10, 30),
     3000: (10, 20),
+    20000: (8, 15),
 }
 
 logger = logging.getLogger()
@@ -51,7 +53,7 @@ def lambda_handler(event, context):
         s3.download_file(bucket, key, input_file)
 
         fps = 12
-        input_file = convert_input_into_mp4(fps, input_file, output_key)
+        input_file = convert_input_into_mp4(fps, input_file, output_file)
 
         fps, quality = define_webp_convertion_config(input_file)
 
@@ -139,7 +141,7 @@ def create_command_webp(input_file,
 def define_webp_convertion_config(input_file):
     tamanho_arquivo = os.path.getsize(input_file)
     for max_size, (fps, quality) in CONFIGS.items():
-        if tamanho_arquivo <= max_size:
+        if tamanho_arquivo <= max_size*100:
             return fps, quality
 
     return CONFIGS[next(reversed(CONFIGS))]
